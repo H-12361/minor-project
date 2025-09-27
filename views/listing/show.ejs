@@ -1,19 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>wounderlust</title>
-</head>
-<body>
-     <h2>List Details: </h2>
-     <ul>
-        <li><%=listing.title%></li>
-        <li><%=listing.description%></li>
-        <li>&#8377;<%=listing.price.toLocaleString("en-In")%> </li>
-        <li><%=listing.location%></li>
-        <li><%=listing.country%></li>
-    </ul>
-   <button > Edit </button>
-</body>
-</html>
+<% layout("/layout/boilerplate") %>
+
+   <body>
+      <div class="row">
+         <div class="col-6 offset-2  mt-2">
+            <h2>List Details</h2>
+            <div class=" card col-6">
+
+
+               <img src="<%=listing.image%>" alt="list_img">
+
+            </div>
+
+         </div>
+
+         <div class="col-6 offset-2">
+            <div>
+               <%=listing.title%>
+            </div>
+            <div>
+               <%=listing.description%>
+
+            </div>
+
+            <div>
+               &#8377;<%=listing.price.toLocaleString("en-In")%>
+
+            </div>
+
+            <div>
+               <%=listing.location%>
+
+            </div>
+
+            <div>
+               <%=listing.country%>
+            </div>
+
+            <div class="mb-3 mt-3">
+               <button class=" btn show-btn"> <a href="/listing/<%=listing._id%>/edit"> Edit this listing</a></button>
+            </div>
+            <div class="mb-3">
+               <form action="/listing/<%=listing._id%>?_method=DELETE" method="post">
+                  <button class=" btn show-btn"> Delete this listing </button>
+               </form>
+            </div>
+
+   </body>
+
+
+   </div>
+
+   </div>

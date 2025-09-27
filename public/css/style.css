@@ -1,0 +1,107 @@
+.body{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+
+}
+.container{
+    flex: 1;
+}
+
+.navbar{
+    height: 5rem;
+    background-color: white;
+    
+}
+.fa-compass{
+    color: rgb(230, 61, 61);
+    font-size: 2rem;
+}
+.nav-link {
+    color: #0e0e0e  !important;
+}
+
+.f-info-link a{
+    text-decoration: none;
+    color: black;
+
+}
+.f-info-link a:hover{
+    text-decoration: underline;
+}
+
+.f-info{
+     display: flex;
+     height: 8rem;
+     background-color: antiquewhite;
+     flex-wrap: wrap;
+     align-items: space-evenly;
+     justify-content: center;
+     text-align: center;
+     
+     
+
+}
+.social-media{
+    width: 100%;
+    margin-top: 2rem;
+}
+.f-info-link{
+    width: 100%;
+}
+
+/* card */
+
+.card{
+    border: none !important;
+    margin: 2rem !important;
+}
+.card-img-top{
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+
+}
+.card-body{
+    padding:  0px !important;
+     
+   
+}
+
+
+
+.row {
+   --bs-gutter-x: 4rem !important;
+}
+
+/* card hover and style */
+.card-img-overlay{ 
+    opacity: 0;
+
+}
+.card-img-overlay:hover{
+     opacity: 0.3;
+     background-color: white;
+}
+/* new form */
+.add-btn{
+    background-color: rgb(230, 61, 61) !important;
+    border: none !important;
+}
+.btn-update{
+    background-color: rgb(230, 61, 61) !important;
+    border: none !important;
+}
+/* show button style */
+.show-btn{
+    display: flex !important;
+    background-color: rgb(230, 61, 61) !important;
+    border: none !important;
+    color: white !important;
+    gap: 4rem !important;
+}
+.show-btn a{
+text-decoration: none !important;
+color: white;
+}

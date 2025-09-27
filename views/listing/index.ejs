@@ -1,17 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>wounderlust</title>
-</head>
-<body>
-     <h2> View All Listing</h2>
-     <form  action="/listing/new"  method="GET">
-        <button> Create new list</button>
-     </form>
-     <% for (let list of alllisting){%>
-        <li><a href="/list/<%=list._id%>"><%=list.title %></a></li>
-     <% }%>
-</body>
-</html>
+<% layout("/layout/boilerplate") %>
+<div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1">
+
+  <% for (let listing of alllisting) { %>
+    <div class="card col">
+      <a href="/listing/<%= listing._id %>" style="text-decoration: none; color: inherit;">
+        <img src="<%= listing.image %>" class="card-img-top" alt="img" style="height: 20rem;">
+        <div class="card-img-overlay">  </div>
+        <div class="card-body">
+          <p class="card-text">
+            <b><%= listing.title %></b><br>
+            &#8377;<%= (listing.price !== null && listing.price !== undefined) 
+                        ? listing.price.toLocaleString("en-IN") 
+                        : "N/A" %> /Day
+          </p>
+        </div>
+      </a>
+    </div>
+  <%}%>
+
+</div>
