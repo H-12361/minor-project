@@ -84,54 +84,6 @@ app.delete("/listing/:id", async (req, res) => {
   res.redirect("/listing");
 });
 
-// //index route
-// app.get("/listing", async (req, res) => {
-//   const alllisting = await Listing.find({});
-//   res.render("listing/index", { alllisting });
-// });
-// //create new list
-// app.get("/listing/new", (req, res) => {
-//   res.render("listing/new.ejs");
-// });
-// // add existing main table
-// app.post("/listing", async (req, res) => {
-//   const new_list = new Listing(req.body);
-//   await new_list.save();
-//   res.redirect("/listing");
-// });
-// //edit route
-// app.get("/listing/:id/edit", async (req, res) => {
-//   let { id } = req.params;
-//   console.log(id);
-//   const listing = await Listing.findById(id);
-//   console.log(listing);
-//   res.render("listing/edit.ejs", { listing })
-// });
-
-// //show route 
-// app.get("/listing/:id", async (req, res) => {
-//   let { id } = req.params;
-//   const listing = await Listing.findById(id);
-//   res.render("listing/show", { listing });
-// });
-
-
-
-
-
-// //update route
-// app.put("/listing/:id", async (req, res) => {
-//   let { id } = req.params;
-//   await Listing.findByIdAndUpdate(id, { ...req.body.listing })
-//   res.redirect("/listing");
-// });
-// //delete route
-// app.delete("/listing/:id", async (req, res) => {
-//   let { id } = req.params;
-//   let delteddata = await Listing.findByIdAndDelete(id);
-//   console.log(delteddata);
-//   res.redirect("/listing");
-// });
 
 app.listen(8080, () => {
   console.log("Server working port 8080 well");

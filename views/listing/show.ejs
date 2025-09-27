@@ -23,8 +23,11 @@
             </div>
 
             <div>
-               &#8377;<%=listing.price.toLocaleString("en-In")%>
-
+               <% if (listing.price !=null) { %>
+                  &#8377;<%= listing.price.toLocaleString("en-IN") %>
+                     <% } else { %>
+                        <span>Price not available</span>
+                        <% } %>
             </div>
 
             <div>
