@@ -5,7 +5,9 @@ const Listing = require("./modles/listing.js")
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-
+const wrapAsync= require("./util/errorusingwrapasync.js")
+ const ExpressError= require("./util/ExpressError.js")//express error file use 
+const {listingSchema}=require("./schema.js")// this file use to joi validate 
 const Mongo_Url = "mongodb://127.0.0.1:27017/wonderlust";
 
 main()
@@ -34,55 +36,85 @@ app.get("/", (req, res) => {
 });
 
 
+//here we crate middleware for joi validation
+ const validateListing=(req,res,next)=>{
+   let {error} = listingSchema.validate(req.body)
+ 
+  if(error){
+    let errmsg=error.details.map((el)=>el.message).join(","); //use to formated the error
+    throw new ExpressError(400,error)
+  }else{
+    next();
+  }
+ }
 
 
 
-// ✅ 1. Index route - show all listings
-app.get("/listing", async (req, res) => {
-  const alllisting = await Listing.find({});
+
+//  1. Index route - show all listings
+app.get("/listing", wrapAsync(async (req, res) => {
+ const alllisting = await Listing.find({});
   res.render("listing/index", { alllisting });
-});
+}));
 
-// ✅ 2. New route - form to create listing (MUST come before :id route)
+//  2. New route - form to create listing (MUST come before :id route)
 app.get("/listing/new", (req, res) => {
   res.render("listing/new.ejs");
 });
 
-// ✅ 3. Create route - add listing to DB
-// ⚠️ Remove the extra spaces after "/listing"
-app.post("/listing", async (req, res) => {
-  const new_list = new Listing(req.body.listing); // make sure your form uses name="listing[title]" etc.
-  await new_list.save();
-  res.redirect("/listing");
-});
+// 3. Create route - add listing to DB
+//  Remove the extra spaces after "/listing"
 
-// ✅ 4. Edit route - show edit form
-app.get("/listing/:id/edit", async (req, res) => {
+  app.post("/listing",validateListing,  wrapAsync(async (req, res,next) => {
+   await new_list.save();
+  res.redirect("/listing");
+
+  }));
+
+
+
+// 4. Edit route - show edit form
+app.get("/listing/:id/edit",wrapAsync( async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
   res.render("listing/edit.ejs", { listing });
-});
+}));
 
-// ✅ 5. Update route - apply changes
-app.put("/listing/:id", async (req, res) => {
-  const { id } = req.params;
+// 5. Update route - apply changes
+app.put("/listing/:id",validateListing, wrapAsync(async (req, res) => {
+   const { id } = req.params;
   await Listing.findByIdAndUpdate(id, { ...req.body.listing });
   res.redirect(`/listing/${id}`);
-});
+}));
 
-// ✅ 6. Show route - show one listing (MUST come after /new and /:id/edit)
-app.get("/listing/:id", async (req, res) => {
+// 6. Show route - show one listing (MUST come after /new and /:id/edit)
+app.get("/listing/:id", wrapAsync(async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
-  res.render("listing/show", { listing });
-});
+  res.render("listing/show",{ listing });
+}));
 
-// ✅ 7. Delete route
-app.delete("/listing/:id", async (req, res) => {
+// 7. Delete route
+app.delete("/listing/:id",  wrapAsync(async (req, res) => {
   const { id } = req.params;
   await Listing.findByIdAndDelete(id);
   res.redirect("/listing");
+}));
+
+
+// // test the expresserror
+// // app.all * means all route check and no route prensent in your backend 
+app.all(/.*/, (req, res, next) => {
+    next(new ExpressError(404, "Page not found!"));
 });
+
+//middleware
+app.use((err,req,res,next)=>{
+  let{ status =500,message ="something went wrong"} = err
+    // res.status(status).send(message);
+    res.status(status).render("error.ejs",{message})
+})
+
 
 
 app.listen(8080, () => {
