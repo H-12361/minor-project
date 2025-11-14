@@ -6,10 +6,11 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync= require("./util/errorusingwrapasync.js")
- const ExpressError= require("./util/ExpressError.js")//express error file use 
-const {listingSchema,reviewsSchema}=require("./schema.js")// this file use to joi validate 
+const ExpressError= require("./util/ExpressError.js")//express error file use 
+const {listingSchema,reviewSchema}=require("./schema.js")// this file use to joi validate 
 const Mongo_Url = "mongodb://127.0.0.1:27017/wonderlust";
 const Review = require("./modles/review.js");
+const review = require("./modles/review.js");
 
 main()
   .then(() => {
@@ -51,7 +52,7 @@ app.get("/", (req, res) => {
 // validate reviewsSchema
 //here we crate middleware for joi validation
  const validateReview=(req,res,next)=>{
-   let {error} = reviewsSchema.validate(req.body)
+   let {error} = reviewSchema.validate(req.body)
     if(error){
     let errmsg=error.details.map((el)=>el.message).join(","); //use to formated the error
     throw new ExpressError(400,error)
@@ -99,10 +100,9 @@ app.put("/listing/:id",validateListing, wrapAsync(async (req, res) => {
 // 6. Show route - show one listing (MUST come after /new and /:id/edit)
 app.get("/listing/:id", wrapAsync(async (req, res) => {
   const { id } = req.params;
-  const listing = await Listing.findById(id);
-  res.render("listing/show",{ listing });
+  const listing = await Listing.findById(id).populate("reviews");
+  res.render("listing/show", { listing });
 }));
-
 // 7. Delete route
 app.delete("/listing/:id",  wrapAsync(async (req, res) => {
   const { id } = req.params;
@@ -113,15 +113,24 @@ app.delete("/listing/:id",  wrapAsync(async (req, res) => {
 //reviews routes
 app.post("/listing/:id/reviews",validateReview,wrapAsync( async(req,res)=>{
 let listing=await Listing.findById(req.params.id);
-let newReview= new Review(req.body.reviews)
+let newReview= new Review(req.body.review)
 listing.reviews.push(newReview);
 await newReview.save();
 await listing.save();
 
-res.send("new reviews saved")
+res.redirect(`/listing/${listing._id}`);
 }))
 
 
+// Delete review route
+app.delete("/listing/:id/reviews/:reviewId" ,wrapAsync (async(req,res)=>{
+  let { id,reviewId}= req.params;
+  await Listing.findByIdAndUpdate(id,{$pull:{reviews:reviewId}})
+  await Review.findByIdAndDelete(reviewID);
+
+  res.redirect(`/listing/${id}`)
+}))
+  
 // // test the expresserror
 // // app.all * means all route check and no route prensent in your backend 
 app.all(/.*/, (req, res, next) => {
