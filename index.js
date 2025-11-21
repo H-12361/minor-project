@@ -76,6 +76,7 @@ app.get("/listing/new", (req, res) => {
 //  Remove the extra spaces after "/listing"
 
   app.post("/listing",validateListing,  wrapAsync(async (req, res,next) => {
+    let new_list = new Listing(req.body.listing); 
    await new_list.save();
   res.redirect("/listing");
 
@@ -113,12 +114,12 @@ app.delete("/listing/:id",  wrapAsync(async (req, res) => {
 //reviews routes
 app.post("/listing/:id/reviews",validateReview,wrapAsync( async(req,res)=>{
 let listing=await Listing.findById(req.params.id);
-let newReview= new Review(req.body.review)
+let newReview= new Review({...req.body.review, listing: listing._id })
 listing.reviews.push(newReview);
 await newReview.save();
 await listing.save();
 
-res.redirect(`/listing/${listing._id}`);
+res.redirect(`/listing/${listing._id}`); 
 }))
 
 
@@ -126,7 +127,7 @@ res.redirect(`/listing/${listing._id}`);
 app.delete("/listing/:id/reviews/:reviewId" ,wrapAsync (async(req,res)=>{
   let { id,reviewId}= req.params;
   await Listing.findByIdAndUpdate(id,{$pull:{reviews:reviewId}})
-  await Review.findByIdAndDelete(reviewID);
+  await Review.findByIdAndDelete(reviewId);
 
   res.redirect(`/listing/${id}`)
 }))

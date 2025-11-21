@@ -13,6 +13,11 @@ const reviewSchema=new Schema({
     createdAt:{
         type:Date,
         default:Date.now()
+    }, 
+    listing: {                // ⭐ Required
+        type: Schema.Types.ObjectId,
+        ref: "Listing",
+        required: true
     }
 });
 
