@@ -4,7 +4,7 @@ const wrapAsync= require("../util/errorusingwrapasync.js")
 const Listing = require("../modles/listing.js")
 const ExpressError= require("../util/ExpressError.js")//express error file use
 const {listingSchema,reviewSchema}=require("../schema.js")// this file use to joi validate 
-
+const {isLoggedIn} =require("../middleware.js")
  
 
 const validateListing = (req, res, next) => {
@@ -27,22 +27,27 @@ router.get("/", wrapAsync(async (req, res) => {
 }));
 
 //  2. New route - form to create listing (MUST come before :id route)
-router.get("/new", (req, res) => {
-  res.render("listing/new.ejs");
+router.get("/new", isLoggedIn,(req, res) => {
+res.render("listing/new.ejs");
 });
 
 // Show route - show one listing (MUST come after /new and /:id/edit)
-router.get("/:id", wrapAsync(async (req, res) => {
+router.get("/:id",isLoggedIn, wrapAsync(async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id).populate("reviews");
+  if(!listing){
+    req.flash("error","Listing you requested doesn't exist !");
+   return  res.redirect("/listing");
+  }
   res.render("listing/show", { listing });
 }));
   // 3. Create route - add listing to DB
 //  Remove the extra spaces after "/listing"
 
-  router.post("/",validateListing,wrapAsync(async (req, res,next) => {
+  router.post("/", isLoggedIn,validateListing,wrapAsync(async (req, res,next) => {
     let new_list = new Listing(req.body.listing); 
    await new_list.save();
+   req.flash("success","New listing add in your page")
    res.redirect("/listing");
 
   }));
@@ -51,23 +56,29 @@ router.get("/:id", wrapAsync(async (req, res) => {
  
   
   // 7. Delete route
-  router.delete("/:id",  wrapAsync(async (req, res) => {
+  router.delete("/:id",isLoggedIn,  wrapAsync(async (req, res) => {
     const { id } = req.params;
     await Listing.findByIdAndDelete(id);
+     req.flash("success","Deleted Listing")
     res.redirect("/listing");
   }));
    // 5. Update route - apply changes
-  router.put("/:id",validateListing,wrapAsync(async (req, res) => {
+  router.put("/:id",isLoggedIn,validateListing,wrapAsync(async (req, res) => {
       const { id } = req.params;
      await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+      req.flash("success","listing updated")
      res.redirect(`/listing/${id}`);
    }));
    // 4. Edit route - show edit form
 router.get(
-  "/listing/:id/edit",
-  wrapAsync(async (req, res) => {
+  "/:id/edit",
+  isLoggedIn,wrapAsync(async (req, res) => {
     const { id } = req.params;
     const listing = await Listing.findById(id);
+     if(!listing){
+    req.flash("error","Listing you requested doesn't exist !");
+   return  res.redirect("/listing");
+  }
     res.render("listing/edit.ejs", { listing });
   })
 );
