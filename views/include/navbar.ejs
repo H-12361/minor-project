@@ -12,11 +12,17 @@
         <a class="nav-link disabled" aria-disabled="true"></a>
       </div>
     </div>
-     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link" aria-current="page" href="/">Home</a>
-        <a class="nav-link" href="/listing">All listing</a>
-        <a class="nav-link" href="/listing/new?">Add new listing</a>
+     <div class="collapse navbar-collapse justify-content-end"   id="navbarNavAltMarkup">
+      <div class="navbar-nav ">
+        
+        <% if(!curruser) {%>
+        <a class="nav-link" aria-current="signup" href="/signup">Signup</a>
+        <a class="nav-link" href="/login">Login</a>
+        <% } %>
+
+        <%if(curruser){%>
+        <a class="nav-link" href="/logout">Logout</a>
+        <% } %>
         <a class="nav-link disabled" aria-disabled="true"></a>
       </div>
     </div>
